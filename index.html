@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CLONEFEST Golf</title>
+  <style>
+    /* Reset and base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      touch-action: manipulation;
+    }
+    
+    /* Game Container (initially hidden) */
+    #gameContainer {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: none;
+    }
+    
+    /* Original game CSS */
+    #scorecard {
+      position: absolute;
+      top: 80px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+      font-weight: 200;
+    }
+    
+    #instructions {
+      position: absolute;
+      top: 80px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      max-width: 300px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    h3 {
+      margin-top: 0;
+      color: #2c3e50;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 5px;
+    }
+    
+    .instruction {
+      margin-bottom: 15px;
+    }
+    
+    .instruction-icon {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      background: #3498db;
+      color: white;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 24px;
+      margin-right: 8px;
+      font-weight: bold;
+    }
+    
+    .divider {
+      height: 1px;
+      background: #ddd;
+      margin: 10px 0;
+    }
+    
+    .distance-unit {
+      font-size: 0.8em;
+      color: #7f8c8d;
+    }
+    
+    /* Custom styling for new club UI */
+    #clubSelectionContainer {
+      position: fixed;
+      left: 20px;
+      bottom: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 10px;
+      padding: 10px;
+      max-width: 300px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    
+    .club {
+      width: 65px;
+      height: 38px;
+      background: #444;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+      font-size: 12px;
+    }
+    
+    .club.selected {
+      background: #3498db;
+    }
+    
+    /* For mobile orientation lock message */
+    #orientationMessage {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(52, 73, 94, 0.95);
+      color: white;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      z-index: 1000;
+      flex-direction: column;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    
+    #orientationMessage img {
+      width: 100px;
+      height: auto;
+      margin-bottom: 20px;
+      animation: rotate 2s infinite;
+    }
+    
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(90deg); }
+      100% { transform: rotate(90deg); }
+    }
+    
+    /* Splash Screen Styles */
+    #splashScreen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100vw;
+      height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #75c32c, #359b23);
+      color: #fff;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow-y: auto;
+    }
+    
+    /* Logo & Tagline */
+    .logo-container {
+      text-align: center;
+      margin-bottom: 40px;
+      margin-top: 40px;
+    }
+    
+    .logo {
+      font-size: 48px;
+      font-weight: bold;
+      margin: 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .tagline {
+      font-size: 18px;
+      opacity: 0.9;
+      margin-top: 10px;
+    }
+    
+    /* Main Play Button */
+    .main-options {
+      width: 100%;
+      max-width: 500px;
+      margin-bottom: 30px;
+    }
+    
+    .play-today-btn {
+      width: 100%;
+      height: 100px;
+      border-radius: 12px;
+      background: #fff;
+      color: #333;
+      border: none;
+      cursor: pointer;
+      font-size: 22px;
+      font-weight: bold;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s ease;
+      padding: 0;
+    }
+    
+    .play-today-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25);
+    }
+    
+    .btn-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .btn-icon {
+      font-size: 28px;
+      margin-bottom: 5px;
+    }
+    
+    .btn-text {
+      font-weight: bold;
+    }
+    
+    .btn-subtext {
+      font-size: 14px;
+      opacity: 0.7;
+      margin-top: 5px;
+    }
+    
+    /* Option Grid */
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      width: 100%;
+      max-width: 500px;
+      margin-bottom: 30px;
+    }
+    
+    .option-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 120px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s ease;
+      padding: 10px;
+      text-align: center;
+    }
+    
+    .option-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+    }
+    
+    .option-btn .btn-icon {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    
+    .option-btn .btn-text {
+      font-weight: bold;
+    }
+    
+    .login-required {
+      font-size: 11px;
+      opacity: 0.8;
+      margin-top: 5px;
+    }
+    
+    /* Bottom Action Buttons */
+    /* removed bottom auth/leaderboard buttons */
+    
+    /* Footer */
+    .footer {
+      margin-top: auto;
+      font-size: 14px;
+      opacity: 0.7;
+      text-align: center;
+    }
+    
+    .footer a {
+      color: white;
+      text-decoration: none;
+    }
+    
+    .footer a:hover {
+      text-decoration: underline;
+    }
+    
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      padding: 20px;
+      color: #333;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .modal-header h3 {
+      margin: 0;
+      font-size: 22px;
+      color: #333;
+      border-bottom: none;
+    }
+    
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #777;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      font-size: 14px;
+      color: #555;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    
+    .submit-btn {
+      width: 100%;
+      padding: 12px;
+      background: #75c32c;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    
+    .submit-btn:hover {
+      background: #63a726;
+    }
+    
+    .form-footer {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
+    }
+    
+    .form-footer a {
+      color: #75c32c;
+      text-decoration: none;
+    }
+    
+    .form-footer a:hover {
+      text-decoration: underline;
+    }
+    
+    /* Leaderboard Styles */
+    .leaderboard-modal {
+      max-width: 500px;
+    }
+    
+    .leaderboard-tabs {
+      display: flex;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .tab {
+      padding: 8px 16px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 14px;
+      color: #777;
+    }
+    
+    .tab.active {
+      color: #75c32c;
+      border-bottom: 2px solid #75c32c;
+      font-weight: bold;
+    }
+    
+    .leaderboard-table {
+      width: 100%;
+    }
+    
+    .leaderboard-header {
+      display: flex;
+      font-weight: bold;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+      color: #555;
+      font-size: 14px;
+    }
+    
+    .leaderboard-row {
+      display: flex;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 15px;
+    }
+    
+    .lb-cell {
+      display: flex;
+      align-items: center;
+    }
+    
+    .lb-rank {
+      width: 15%;
+    }
+    
+    .lb-player {
+      width: 40%;
+      font-weight: bold;
+    }
+    
+    .lb-score {
+      width: 25%;
+      font-weight: bold;
+    }
+    
+    .lb-date {
+      width: 20%;
+      color: #777;
+      font-size: 13px;
+    }
+    
+    .under-par {
+      color: #e74c3c;
+    }
+    
+    .over-par {
+      color: #2980b9;
+    }
+    
+    /* Coming Soon Indicator */
+    .coming-soon {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    
+    /* Media Queries */
+    @media (max-width: 600px) {
+      .logo {
+        font-size: 36px;
+      }
+      
+      .option-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .option-btn {
+        height: 80px;
+      }
+      
+      .bottom-options {
+        flex-direction: column;
+        width: 100%;
+        max-width: 500px;
+        gap: 10px;
+      }
+      
+      .action-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Splash Screen -->
+  <div id="splashScreen">
+    <div class="logo-container">
+      <h1 class="logo">CLONEFEST GOLF</h1>
+      <p class="tagline">Single-player golf. Three levels. Have fun!</p>
+    </div>
+    
+    <!-- Removed today's game CTA; only levels remain -->
+    
+    <div class="option-grid">
+      <button id="levelEasyBtn" class="option-btn level-btn">
+        <span class="btn-icon">🌱</span>
+        <span class="btn-text">Level 1: Easy</span>
+      </button>
+      <button id="levelMediumBtn" class="option-btn level-btn">
+        <span class="btn-icon">⛰️</span>
+        <span class="btn-text">Level 2: Medium</span>
+      </button>
+      <button id="levelHardBtn" class="option-btn level-btn">
+        <span class="btn-icon">🔥</span>
+        <span class="btn-text">Level 3: Hard</span>
+      </button>
+    </div>
+    
+    <!-- Credit & Footer -->
+    
+  </div>
+
+  <!-- Game Container (initially hidden) -->
+  <div id="gameContainer">
+    <div id="scorecard">
+      <h3>Scorecard</h3>
+      <div id="holeName">Today's Hole</div>
+      <div id="holeDetails">Par 4 • 450 yards</div>
+      <div>Strokes: <span id="strokes">0</span></div>      
+    </div>
+  
+  <!-- Mobile orientation message -->
+  <div id="orientationMessage">
+    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0zMiA0NEgxNmMtMi4yMSAwLTQtMS43OS00LTRWOGMwLTIuMjEgMS43OS00IDQtNGgxNmMyLjIxIDAgNCAxLjc5IDQgNHYzMmMwIDIuMjEtMS43OSA0LTQgNHptLTE2LTM2Yy0uNTUgMC0xIC40NS0xIDF2MzBjMCAuNTUuNDUgMSAxIDFoMTZjLjU1IDAgMS0uNDUgMS0xVjljMC0uNTUtLjQ1LTEtMS0xSDE2eiIvPjxwYXRoIGQ9Ik0yNCAzNWMxLjY2IDAgMy0xLjM0IDMtM3MtMS4zNC0zLTMtMy0zIDEuMzQtMyAzIDEuMzQgMyAzIDN6Ii8+PC9zdmc+" alt="Rotate Device">
+    <h2>Please Rotate Your Device</h2>
+    <p>This game works best in landscape orientation. Please rotate your device to play.</p>
+  </div>
+
+  <!-- Import the original game modules -->
+  <script type="module" src="./js/main.js"></script>
+  <script type="module" src="./js/splash-integrator.js"></script>
+  
+  <!-- Add the splash screen functionality -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+  
+      // Difficulty buttons
+      const setDifficultyAndStart = (level) => {
+        window.selectedDifficulty = level;
+        startGame();
+      };
+      document.getElementById('levelEasyBtn').addEventListener('click', () => setDifficultyAndStart('easy'));
+      document.getElementById('levelMediumBtn').addEventListener('click', () => setDifficultyAndStart('medium'));
+      document.getElementById('levelHardBtn').addEventListener('click', () => setDifficultyAndStart('hard'));
+      
+      // Function to start the game (hide splash screen, show game)
+      function startGame() {
+        // If a previous game exists, clean it up fully before starting a new one
+        if (window.gameInstance && typeof window.gameInstance.cleanup === 'function') {
+          try { window.gameInstance.cleanup(); } catch (e) { console.warn('Cleanup error:', e); }
+        }
+        // Clear previous canvas/UI inside game container to prevent duplicates
+        const gameContainerEl = document.getElementById('gameContainer');
+        if (gameContainerEl) {
+          gameContainerEl.innerHTML = `
+    <div id="scorecard">
+      <h3>Scorecard</h3>
+      <div id="holeName">Today's Hole</div>
+      <div id="holeDetails">Par 4 • 450 yards</div>
+      <div>Strokes: <span id="strokes">0</span></div>      
+    </div>`;
+        }
+        // Clear global references that might hold stale state
+        delete window.ballPhysics;
+        delete window.gameState;
+
+        // Hide splash screen
+        document.getElementById('splashScreen').style.display = 'none';
+        
+        // Show game container
+        document.getElementById('gameContainer').style.display = 'block';
+        
+        // Initialize original game flow and immediately start selected level
+        if (window.GolfGame) {
+          window.gameInstance = new window.GolfGame();
+          if (window.gameInstance && window.gameInstance.holeSelector) {
+            // Pick today's hole (keeps original generation)
+            window.gameInstance.holeSelector.selectTodaysHole();
+          }
+          if (window.gameInstance && typeof window.gameInstance.initializeAfterSplash === 'function') {
+            window.gameInstance.initializeAfterSplash();
+          }
+        }
+      }
+      
+      // Mobile orientation check
+      function checkOrientation() {
+        const orientationMessage = document.getElementById('orientationMessage');
+        if (window.innerHeight > window.innerWidth && window.innerWidth < 768) {
+          orientationMessage.style.display = 'flex';
+        } else {
+          orientationMessage.style.display = 'none';
+        }
+      }
+      
+      // Check orientation on load and resize
+      window.addEventListener('resize', checkOrientation);
+      window.addEventListener('orientationchange', checkOrientation);
+      
+      // Initial orientation check
+      checkOrientation();
+    });
+  </script>
+</head>
+</body>
+</html>
+
