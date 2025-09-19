@@ -38,7 +38,7 @@ live url:http://golf-three-js.vercel.app
 ---
 
 
-###⚙️ Physics & Gameplay Mechanics
+##⚙️ Physics & Gameplay Mechanics
 
 Our MiniGolf uses realistic physics powered by cannon-es
 .
@@ -56,27 +56,41 @@ Physics Body: CANNON.Sphere
 Each club produces a different launch angle and speed factor:
 
 Club	Launch Angle	 Speed Factor
+
 Driver	~15°	         1.00
+
 Wood 3	~18°	         0.95
+
 Hybrid	~20°	         0.92
+
 Iron 2	~21°           0.90
+
 Iron 3	~22.5°	       0.88
+
 Iron 4	~24°           0.87
+
 Iron 5	~24°	         0.85
+
 Iron 6	~25.7°	       0.84
+
 Iron 7	~25.7°	       0.83
+
 Iron 8	~27.7°	       0.82
+
 Iron 9	~30°	         0.81
+
 Pitching Wedge ~32.7°	 0.80
+
 Sand Wedge	~36°	     0.75
+
 Lob Wedge	~40°	       0.70
 
 
-###🎚️ Difficulty Settings
+##🎚️ Difficulty Settings
 
 Physics is tuned per difficulty:
 
-#Impulse Power:
+###Impulse Power:
 
 Easy → 5.5
 
@@ -84,7 +98,7 @@ Medium → 4.0
 
 Hard → 3.0
 
-#Friction:
+###Friction:
 
 Easy → 0.20
 
@@ -92,7 +106,7 @@ Medium → 0.35
 
 Hard → 0.50
 
-#Restitution (Bounciness):
+###Restitution (Bounciness):
 
 Easy → 0.80
 
@@ -100,7 +114,7 @@ Medium → 0.60
 
 Hard → 0.30
 
-###🎮 Controls
+##🎮 Controls
 
 ⬅️➡️ Left / Right Arrows → Adjust aim direction
 
@@ -112,7 +126,7 @@ Mouse Drag → Orbit camera
 
 Scroll → Zoom in/out
 
-###🖥️ User Interface
+##🖥️ User Interface
 
 🏌️ Stroke Counter → Updates after every shot
 
@@ -123,7 +137,7 @@ Scroll → Zoom in/out
 📍 HUD Overlay → Hole number, strokes, score
 
 
-###📸 Assets
+##📸 Assets
 
 ⛳ Flagpole → Hole target
 
