@@ -175,7 +175,7 @@ Scroll → Zoom in/out
 
 ---
 
-## 📂 Project Structure  # Root of the project
+## 📂 Project Structure  
 
 ```bash              
 │
