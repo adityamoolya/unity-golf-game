@@ -231,6 +231,14 @@ export class PhysicsEngine {
           this.ballPosition.y = terrainHeight - 0.3; // Sink the ball
           this.ballPhysics.ball.position.copy(this.ballPosition);
           
+          // Dispatch hole completion event for extended sound
+          document.dispatchEvent(new CustomEvent('holeComplete', {
+            detail: {
+              position: this.ballPosition.clone(),
+              strokes: this.gameState.strokes
+            }
+          }));
+          
           // Complete hole after animation delay
           setTimeout(() => {
             this.gameState.completeHole();
@@ -537,6 +545,14 @@ checkBallStopped(ballLie) {
     this.gameState.ballPosition = this.ballPosition.clone();
     
     console.log("%c[BALL STOPPED] Final position:", "background: black; color: white", this.ballPosition.clone());
+    
+    // Dispatch shot completion event for sound
+    document.dispatchEvent(new CustomEvent('shotComplete', {
+      detail: {
+        position: this.ballPosition.clone(),
+        strokes: this.gameState.strokes
+      }
+    }));
     
     // Set up for next shot after a short delay
     setTimeout(() => {

@@ -130,6 +130,9 @@ class GolfGame {
     window.gameState = this.gameState;
     window.ballPhysics = this.ballPhysics;
     
+    // Set up simple audio for clapping sounds
+    this.setupSimpleAudio();
+    
     // Start animation loop if not already started
     if (!this.animationStarted) {
       this.animate = this.animate.bind(this);
@@ -153,6 +156,131 @@ class GolfGame {
     }
   }
   
+  // Set up audio for clapping sounds using sound.mp3
+  setupSimpleAudio() {
+    // Load the clapping sound file
+    this.loadClappingSound();
+    
+    // Listen for shot completion events
+    document.addEventListener('shotComplete', () => {
+      this.playClappingSound();
+    });
+    
+    // Listen for hole completion events
+    document.addEventListener('holeComplete', () => {
+      this.playFinalClappingSound();
+    });
+    
+    // Enable audio context on first user interaction (required by modern browsers)
+    this.enableAudioOnInteraction();
+  }
+  
+  // Enable audio context on first user interaction
+  enableAudioOnInteraction() {
+    const enableAudio = () => {
+      if (window.audioContext && window.audioContext.state === 'suspended') {
+        window.audioContext.resume().then(() => {
+          console.log('Audio context resumed');
+        });
+      }
+    };
+    
+    // Listen for any user interaction to enable audio
+    document.addEventListener('click', enableAudio, { once: true });
+    document.addEventListener('keydown', enableAudio, { once: true });
+    document.addEventListener('touchstart', enableAudio, { once: true });
+  }
+  
+  // Load the clapping sound from sound.mp3
+  loadClappingSound() {
+    try {
+      // Create audio context if it doesn't exist
+      if (!window.audioContext) {
+        window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      
+      // Load the sound file
+      const audio = new Audio('./sound.mp3');
+      audio.preload = 'auto';
+      
+      // Add event listeners for loading
+      audio.addEventListener('canplaythrough', () => {
+        console.log('Clapping sound loaded and ready to play');
+      });
+      
+      audio.addEventListener('error', (e) => {
+        console.warn('Error loading clapping sound file:', e);
+        this.clappingSound = null; // Set to null if loading fails
+      });
+      
+      // Store reference for later use
+      this.clappingSound = audio;
+      
+      console.log('Clapping sound loading...');
+    } catch (error) {
+      console.warn('Error loading clapping sound:', error);
+      this.clappingSound = null;
+    }
+  }
+  
+  // Play clapping sound after each shot (2-3 seconds)
+  playClappingSound() {
+    try {
+      if (this.clappingSound) {
+        // Reset the audio to the beginning
+        this.clappingSound.currentTime = 0;
+        
+        // Play the sound
+        this.clappingSound.play().catch(error => {
+          console.warn('Error playing clapping sound:', error);
+        });
+        
+        // Stop after 2-3 seconds
+        setTimeout(() => {
+          if (this.clappingSound) {
+            this.clappingSound.pause();
+            this.clappingSound.currentTime = 0;
+          }
+        }, 2500); // 2.5 seconds duration
+        
+        console.log('Playing clapping sound for 2.5 seconds');
+      } else {
+        console.log('Clapping sound not available, skipping audio');
+      }
+    } catch (error) {
+      console.warn('Error playing clapping sound:', error);
+    }
+  }
+  
+  // Play extended clapping sound after final shot (4-5 seconds)
+  playFinalClappingSound() {
+    try {
+      if (this.clappingSound) {
+        // Reset the audio to the beginning
+        this.clappingSound.currentTime = 0;
+        
+        // Play the sound
+        this.clappingSound.play().catch(error => {
+          console.warn('Error playing final clapping sound:', error);
+        });
+        
+        // Stop after 4-5 seconds
+        setTimeout(() => {
+          if (this.clappingSound) {
+            this.clappingSound.pause();
+            this.clappingSound.currentTime = 0;
+          }
+        }, 4500); // 4.5 seconds duration
+        
+        console.log('Playing final clapping sound for 4.5 seconds');
+      } else {
+        console.log('Clapping sound not available, skipping final audio');
+      }
+    } catch (error) {
+      console.warn('Error playing final clapping sound:', error);
+    }
+  }
+
   // Update hole info on the UI
   updateHoleInfoDisplay() {
     // Update hole info in the scorecard
@@ -401,6 +529,8 @@ class GolfGame {
     if (this.cameraController && typeof this.cameraController.dispose === 'function') {
       this.cameraController.dispose();
     }
+    
+    
     // Remove event listeners
     window.removeEventListener('resize', this.onWindowResize);
     
