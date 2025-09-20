@@ -37,13 +37,12 @@ live url:http://golf-three-js.vercel.app
 
 ---
 
-
 ##⚙️ Physics & Gameplay Mechanics
 
 Our MiniGolf uses realistic physics powered by cannon-es
 .
 
-🏌️ Golf Ball
+###🏌️ Golf Ball
 
 Mass: 45.93 g (0.04593 kg)
 
@@ -51,7 +50,7 @@ Radius: 0.0213 m (scaled ×5 for visibility)
 
 Physics Body: CANNON.Sphere
 
-🏌️ Clubs & Launch Angles
+###🏌️ Clubs & Launch Angles
 
 Each club produces a different launch angle and speed factor:
 
@@ -85,6 +84,7 @@ Sand Wedge	~36°	     0.75
 
 Lob Wedge	~40°	       0.70
 
+---
 
 ##🎚️ Difficulty Settings
 
@@ -114,6 +114,8 @@ Medium → 0.60
 
 Hard → 0.30
 
+---
+
 ##🎮 Controls
 
 ⬅️➡️ Left / Right Arrows → Adjust aim direction
@@ -126,6 +128,8 @@ Mouse Drag → Orbit camera
 
 Scroll → Zoom in/out
 
+---
+
 ##🖥️ User Interface
 
 🏌️ Stroke Counter → Updates after every shot
@@ -136,6 +140,7 @@ Scroll → Zoom in/out
 
 📍 HUD Overlay → Hole number, strokes, score
 
+---
 
 ##📸 Assets
 
@@ -149,6 +154,7 @@ Scroll → Zoom in/out
 
 🎵 Sounds → Ball hit, hole-in, background ambience
 
+---
 
 ## 📂 Project Structure
 
