@@ -212,8 +212,9 @@ Scroll → Zoom in/out
 │   └── UIController.js        # Manages user interface
 │
 ├── public                     # Static assets
-│   └── sound.mp3              # Example sound effect file
-│
+│   └── sound.mp3          # Example sound effect file
+│   |__ lofi.mp3
+|
 ├── README.md                  # Project documentation
 ├── index.html                 # Main HTML entry point
 ├── package-lock.json          # Dependency lock file
