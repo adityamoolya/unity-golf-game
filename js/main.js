@@ -199,22 +199,48 @@ class GolfGame {
         window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
       }
       
-      // Load the sound file
-      const audio = new Audio('./sound.mp3');
-      audio.preload = 'auto';
+      // Try multiple paths for different deployment scenarios
+      const soundPaths = [
+        '/sound.mp3',        // Vercel/public folder
+        './sound.mp3',       // Local development
+        'sound.mp3'          // Fallback
+      ];
       
-      // Add event listeners for loading
-      audio.addEventListener('canplaythrough', () => {
-        console.log('Clapping sound loaded and ready to play');
-      });
+      let audio = null;
+      let pathIndex = 0;
       
-      audio.addEventListener('error', (e) => {
-        console.warn('Error loading clapping sound file:', e);
-        this.clappingSound = null; // Set to null if loading fails
-      });
+      const tryLoadSound = () => {
+        if (pathIndex >= soundPaths.length) {
+          console.warn('All sound file paths failed to load');
+          this.clappingSound = null;
+          return;
+        }
+        
+        const currentPath = soundPaths[pathIndex];
+        console.log(`Trying to load sound from: ${currentPath}`);
+        
+        audio = new Audio(currentPath);
+        audio.preload = 'auto';
+        
+        // Add event listeners for loading
+        audio.addEventListener('canplaythrough', () => {
+          console.log(`Clapping sound loaded successfully from: ${currentPath}`);
+          this.clappingSound = audio;
+        });
+        
+        audio.addEventListener('loadeddata', () => {
+          console.log(`Clapping sound data loaded from: ${currentPath}`);
+        });
+        
+        audio.addEventListener('error', (e) => {
+          console.warn(`Error loading sound from ${currentPath}:`, e);
+          pathIndex++;
+          tryLoadSound(); // Try next path
+        });
+      };
       
-      // Store reference for later use
-      this.clappingSound = audio;
+      // Start trying to load the sound
+      tryLoadSound();
       
       console.log('Clapping sound loading...');
     } catch (error) {
