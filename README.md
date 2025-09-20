@@ -34,7 +34,7 @@ The **modular script architecture** manages player input, ball physics, UI updat
 - WASD movement
 - Mouse look for navigation
 
-### Advanced Shooting Mechanic
+### Shooting Mechanics
 - Hold **Right Mouse Button** to aim and charge power
 - Dynamic **Power Meter UI**
 - **Line Renderer** for projectile trajectory with gravity and drag
