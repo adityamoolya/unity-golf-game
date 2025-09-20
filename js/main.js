@@ -156,10 +156,13 @@ class GolfGame {
     }
   }
   
-  // Set up audio for clapping sounds using sound.mp3
+  // Set up audio for clapping sounds using sound.mp3 and background music
   setupSimpleAudio() {
     // Load the clapping sound file
     this.loadClappingSound();
+    
+    // Load the background music
+    this.loadBackgroundMusic();
     
     // Listen for shot completion events
     document.addEventListener('shotComplete', () => {
@@ -304,6 +307,102 @@ class GolfGame {
       }
     } catch (error) {
       console.warn('Error playing final clapping sound:', error);
+    }
+  }
+
+  // Load the background music from lofi.mp3
+  loadBackgroundMusic() {
+    try {
+      // Try multiple paths for different deployment scenarios
+      const musicPaths = [
+        '/lofi.mp3',        // Vercel/public folder
+        './lofi.mp3',       // Local development
+        'lofi.mp3'          // Fallback
+      ];
+      
+      let audio = null;
+      let pathIndex = 0;
+      
+      const tryLoadMusic = () => {
+        if (pathIndex >= musicPaths.length) {
+          console.warn('All background music file paths failed to load');
+          this.backgroundMusic = null;
+          return;
+        }
+        
+        const currentPath = musicPaths[pathIndex];
+        console.log(`Trying to load background music from: ${currentPath}`);
+        
+        audio = new Audio(currentPath);
+        audio.preload = 'auto';
+        audio.loop = true; // Loop the background music
+        audio.volume = 0.3; // Set volume to 30% so it doesn't overpower clapping sounds
+        
+        // Add event listeners for loading
+        audio.addEventListener('canplaythrough', () => {
+          console.log(`Background music loaded successfully from: ${currentPath}`);
+          this.backgroundMusic = audio;
+          // Auto-start background music when loaded
+          this.startBackgroundMusic();
+        });
+        
+        audio.addEventListener('loadeddata', () => {
+          console.log(`Background music data loaded from: ${currentPath}`);
+        });
+        
+        audio.addEventListener('error', (e) => {
+          console.warn(`Error loading background music from ${currentPath}:`, e);
+          pathIndex++;
+          tryLoadMusic(); // Try next path
+        });
+      };
+      
+      // Start trying to load the music
+      tryLoadMusic();
+      
+      console.log('Background music loading...');
+    } catch (error) {
+      console.warn('Error loading background music:', error);
+      this.backgroundMusic = null;
+    }
+  }
+
+  // Start playing background music
+  startBackgroundMusic() {
+    try {
+      if (this.backgroundMusic) {
+        this.backgroundMusic.play().catch(error => {
+          console.warn('Error starting background music:', error);
+        });
+        console.log('Background music started');
+      }
+    } catch (error) {
+      console.warn('Error starting background music:', error);
+    }
+  }
+
+  // Stop background music
+  stopBackgroundMusic() {
+    try {
+      if (this.backgroundMusic) {
+        this.backgroundMusic.pause();
+        this.backgroundMusic.currentTime = 0;
+        console.log('Background music stopped');
+      }
+    } catch (error) {
+      console.warn('Error stopping background music:', error);
+    }
+  }
+
+  // Set background music volume (0.0 to 1.0)
+  setBackgroundMusicVolume(volume) {
+    try {
+      if (this.backgroundMusic) {
+        this.backgroundMusic.volume = Math.max(0, Math.min(1, volume));
+        console.log(`Background music volume set to: ${this.backgroundMusic.volume}`);
+      }
+    } catch (error) {
+      console.warn('Error setting background music volume:', error);
     }
   }
 
@@ -556,6 +655,16 @@ class GolfGame {
       this.cameraController.dispose();
     }
     
+    // Stop and cleanup audio
+    if (this.backgroundMusic) {
+      this.stopBackgroundMusic();
+      this.backgroundMusic = null;
+    }
+    
+    if (this.clappingSound) {
+      this.clappingSound.pause();
+      this.clappingSound = null;
+    }
     
     // Remove event listeners
     window.removeEventListener('resize', this.onWindowResize);
