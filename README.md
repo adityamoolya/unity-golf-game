@@ -175,48 +175,47 @@ Scroll → Zoom in/out
 
 ---
 
-## 📂 Project Structure
+## 📂 Project Structure  # Root of the project
 
-```bash
-mini-golf/
+```bash              
 │
-├── index.html              # Entry point
-├── styles/
-│   └── style.css           # UI styling
+├── js                         # Entry point scripts
+│   ├── main.js                # Main initialization script
+│   ├── simple-game.js         # Simplified game version / demo
+│   └── splash-integrator.js   # Handles splash screen or intro integration
 │
-├── src/
-│   ├── main.js             # Initializes everything (entry script)
+├── modules                    # Core game logic & modular code
+│   ├── components             # Components = specific managers & controllers
+│   │   ├── AnimationController.js  # Handles animations
+│   │   ├── HazardManager.js       # Spawns/controls hazards
+│   │   ├── ObjectPlacer.js        # Places objects dynamically
+│   │   ├── SkyboxManager.js       # Manages background/skybox
+│   │   ├── TerrainDetection.js    # Detects terrain interactions
+│   │   └── TerrainGenerator.js    # Procedurally generates terrain
 │   │
-│   ├── core/               # Three.js setup
-│   │   ├── scene.js
-│   │   ├── camera.js
-│   │   ├── renderer.js
-│   │   ├── lighting.js
-│   │   └── controls.js
+│   ├── physics                # Physics-related scripts
+│   │   ├── PhysicsEngine.js       # Core physics engine
+│   │   ├── ShotController.js      # Controls ball shots
+│   │   ├── TerrainInteraction.js  # Handles ball-terrain collisions
+│   │   ├── UIInteractions.js      # Physics interactions tied to UI
+│   │   └── VisualComponents.js    # Visual effects tied to physics
 │   │
-│   ├── objects/            # World objects
-│   │   ├── ball.js
-│   │   ├── course.js
-│   │   ├── hole.js
-│   │   └── obstacles.js
-│   │
-│   ├── mechanics/          # Gameplay + physics
-│   │   ├── physics.js
-│   │   ├── input.js
-│   │   └── gameplay.js
-│   │
-│   ├── ui/                 # Interface
-│   │   ├── hud.js
-│   │   ├── powerbar.js
-│   │   └── menu.js
-│   │
-│   └── utils/              # Helpers
-│       ├── loader.js
-│       └── math.js
+│   ├── BallPhysics.js         # Ball physics rules
+│   ├── CameraController.js    # Camera logic & movements
+│   ├── CourseBuilder.js       # Builds courses dynamically
+│   ├── CourseConfig.js        # Stores config (par, holes, layout, etc.)
+│   ├── GameState.js           # Tracks overall game state
+│   ├── HoleGenerator.js       # Creates golf holes
+│   ├── HoleSelector.js        # Logic to select which hole to play
+│   ├── InputController.js     # Keyboard/mouse/gamepad input
+│   ├── TerrainManager.js      # Manages terrain lifecycle
+│   └── UIController.js        # Manages user interface
 │
-├── assets/
-│   ├── models/             # 3D models (ball, stick, flag, tree)
-│   ├── textures/           # Grass, wood, etc.
-│   └── sounds/             # Ball hit, hole-in-one, bg music
+├── public                     # Static assets
+│   └── sound.mp3              # Example sound effect file
 │
-└── package.json            # Config (if using npm/vite)
+├── README.md                  # Project documentation
+├── index.html                 # Main HTML entry point
+├── package-lock.json          # Dependency lock file
+├── package.json               # Dependencies + scripts
+└── vite.config.js             # Vite bundler configuration
