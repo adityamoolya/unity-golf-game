@@ -12,6 +12,9 @@ export class UIController {
     
     // Create new club selection UI
     this.clubSelectionUI = this.createClubSelectionUI();
+    
+    // Create music controls
+    this.musicControls = this.createMusicControls();
   
     // Set scorecard width
     this.setScoreCardWidth();
@@ -193,6 +196,93 @@ export class UIController {
     document.body.appendChild(cameraModeButton);
     
     return cameraModeButton;
+  }
+  
+  // Create music controls
+  createMusicControls() {
+    const musicControlsContainer = document.createElement('div');
+    musicControlsContainer.id = 'musicControlsContainer';
+    musicControlsContainer.style.position = 'fixed';
+    musicControlsContainer.style.top = '20px';
+    musicControlsContainer.style.right = '20px';
+    musicControlsContainer.style.display = 'flex';
+    musicControlsContainer.style.flexDirection = 'column';
+    musicControlsContainer.style.gap = '5px';
+    musicControlsContainer.style.zIndex = '100';
+    
+    // Music toggle button
+    const musicToggleButton = document.createElement('button');
+    musicToggleButton.id = 'musicToggleButton';
+    musicToggleButton.innerHTML = '🎵 ON';
+    musicToggleButton.style.padding = '8px 12px';
+    musicToggleButton.style.fontSize = '12px';
+    musicToggleButton.style.background = '#e74c3c';
+    musicToggleButton.style.color = 'white';
+    musicToggleButton.style.border = 'none';
+    musicToggleButton.style.borderRadius = '15px';
+    musicToggleButton.style.cursor = 'pointer';
+    musicToggleButton.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+    musicToggleButton.style.transition = 'all 0.2s ease';
+    
+    // Volume slider
+    const volumeSlider = document.createElement('input');
+    volumeSlider.id = 'volumeSlider';
+    volumeSlider.type = 'range';
+    volumeSlider.min = '0';
+    volumeSlider.max = '100';
+    volumeSlider.value = '30';
+    volumeSlider.style.width = '120px';
+    volumeSlider.style.height = '5px';
+    volumeSlider.style.background = '#ddd';
+    volumeSlider.style.outline = 'none';
+    volumeSlider.style.borderRadius = '5px';
+    volumeSlider.style.cursor = 'pointer';
+    
+    // Volume label
+    const volumeLabel = document.createElement('div');
+    volumeLabel.id = 'volumeLabel';
+    volumeLabel.textContent = 'Volume: 30%';
+    volumeLabel.style.fontSize = '10px';
+    volumeLabel.style.color = '#2c3e50';
+    volumeLabel.style.textAlign = 'center';
+    
+    // Add elements to container
+    musicControlsContainer.appendChild(musicToggleButton);
+    musicControlsContainer.appendChild(volumeSlider);
+    musicControlsContainer.appendChild(volumeLabel);
+    
+    // Add to DOM
+    document.body.appendChild(musicControlsContainer);
+    
+    // Set up event listeners
+    musicToggleButton.addEventListener('click', () => {
+      if (window.golfGame) {
+        if (musicToggleButton.innerHTML === '🎵 ON') {
+          window.golfGame.stopBackgroundMusic();
+          musicToggleButton.innerHTML = '🔇 OFF';
+          musicToggleButton.style.background = '#95a5a6';
+        } else {
+          window.golfGame.startBackgroundMusic();
+          musicToggleButton.innerHTML = '🎵 ON';
+          musicToggleButton.style.background = '#e74c3c';
+        }
+      }
+    });
+    
+    volumeSlider.addEventListener('input', () => {
+      const volume = parseInt(volumeSlider.value) / 100;
+      if (window.golfGame) {
+        window.golfGame.setBackgroundMusicVolume(volume);
+      }
+      volumeLabel.textContent = `Volume: ${volumeSlider.value}%`;
+    });
+    
+    return {
+      container: musicControlsContainer,
+      toggleButton: musicToggleButton,
+      volumeSlider: volumeSlider,
+      volumeLabel: volumeLabel
+    };
   }
   
   // Create an improved club selection interface
